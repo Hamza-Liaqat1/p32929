@@ -1,25 +1,22 @@
-import React, { useEffect, useState } from 'react'
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useEffect, useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import { Theme, Grid, useMediaQuery, useTheme } from "@material-ui/core";
-import { useActions, useAppState } from '../Overmind/OvermindHelper';
-import RouteLocation from './Right/Top/RouteLocation';
-import TopRightButtons from './Right/Top/TopRightButtons';
-import WorksRoute from './Right/Routes/WorksRoute';
-import ContactRoute from './Right/Routes/ContactRoute';
-import SkillsRoute from './Right/Routes/SkillsRoute';
-import AboutRoute from './Right/Routes/AboutRoute';
-import { GlobalVars } from '../Others/GlobalVars';
+import { useActions, useAppState } from "../Overmind/OvermindHelper";
+import RouteLocation from "./Right/Top/RouteLocation";
+import TopRightButtons from "./Right/Top/TopRightButtons";
+import WorksRoute from "./Right/Routes/WorksRoute";
+import ContactRoute from "./Right/Routes/ContactRoute";
+import SkillsRoute from "./Right/Routes/SkillsRoute";
+import AboutRoute from "./Right/Routes/AboutRoute";
+import { GlobalVars } from "../Others/GlobalVars";
 import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
-  useLocation
+  useLocation,
 } from "react-router-dom";
 
-interface Props {
-
-}
+interface Props {}
 
 const getThemeObj = (theme: Theme) => {
   return {
@@ -28,63 +25,91 @@ const getThemeObj = (theme: Theme) => {
     },
     content: {
       paddingRight: 8,
-      maxHeight: '100vh',
-      maxWidth: '100%',
-    }
-  }
-}
+      maxHeight: "100vh",
+      maxWidth: "100%",
+    },
+  };
+};
 
-const routes = [
-  AboutRoute,
-  SkillsRoute,
-  WorksRoute,
-  ContactRoute,
-]
+const routes = [AboutRoute, SkillsRoute, WorksRoute, ContactRoute];
 
-const useStyles = makeStyles((theme: Theme) => (getThemeObj(theme)))
+const useStyles = makeStyles((theme: Theme) => getThemeObj(theme));
 
 const RightPart: React.FC<Props> = (props) => {
-  const { } = useActions()
-  const { isLeftShowing } = useAppState()
+  const {} = useActions();
+  const { isLeftShowing } = useAppState();
   const classes = useStyles();
-  const [contentHeight, setContentHeight] = useState(0)
+  const [contentHeight, setContentHeight] = useState(0);
 
-  const theme = useTheme()
-  const belowSm = useMediaQuery(theme.breakpoints.down('sm'))
+  const theme = useTheme();
+  const belowSm = useMediaQuery(theme.breakpoints.down("sm"));
   let location = useLocation();
 
   useEffect(() => {
-    const rc = document.getElementById('container')
-    const rt = document.getElementById('right-top')
-    const rb = document.getElementById('right-bottom')
+    const rc = document.getElementById("container");
+    const rt = document.getElementById("right-top");
+    const rb = document.getElementById("right-bottom");
 
     if (rc && rt) {
-      const height = rc?.offsetHeight - rt?.offsetHeight
+      const height = rc?.offsetHeight - rt?.offsetHeight;
       console.log("Height: " + height);
 
-      setContentHeight(height)
+      setContentHeight(height);
     }
-  }, [isLeftShowing, belowSm])
+  }, [isLeftShowing, belowSm]);
 
   useEffect(() => {
-    document?.getElementById('right-bottom')?.scroll(0, 0)
-  }, [location])
+    document?.getElementById("right-bottom")?.scroll(0, 0);
+  }, [location]);
 
-  return <Grid id='right-container' container xs item direction='row' alignContent='flex-start'  >
-    <Grid id='right-top' container direction='row' className={classes.root} justify='space-between' alignItems='flex-start' alignContent='flex-start'>
-      <RouteLocation />
-      <TopRightButtons />
+  return (
+    <Grid
+      id="right-container"
+      container
+      xs
+      item
+      direction="row"
+      alignContent="flex-start"
+    >
+      <Grid
+        id="right-top"
+        container
+        direction="row"
+        className={classes.root}
+        justify="space-between"
+        alignItems="flex-start"
+        alignContent="flex-start"
+      >
+        <RouteLocation />
+        <TopRightButtons />
+      </Grid>
+      <Grid
+        id="right-bottom"
+        style={{
+          height: contentHeight,
+          maxHeight: contentHeight,
+          overflowY: "scroll",
+          overflowX: "hidden",
+        }}
+        item
+        xs={12}
+        container
+        className={classes.content}
+      >
+        <Switch>
+          {GlobalVars.routes.map((item, index) => {
+            return (
+              <Route
+                exact
+                path={`/${item.toLowerCase()}`}
+                component={routes[index]}
+              />
+            );
+          })}
+        </Switch>
+      </Grid>
     </Grid>
-    <Grid id='right-bottom' style={{ height: contentHeight, maxHeight: contentHeight, overflowY: 'scroll', overflowX: 'hidden'}} item xs={12} container className={classes.content} >
-      <Switch>
-        {
-          GlobalVars.routes.map((item, index) => {
-            return <Route exact path={`/${item.toLowerCase()}`} component={routes[index]} />
-          })
-        }
-      </Switch>
-    </Grid>
-  </Grid>
-}
+  );
+};
 
 export default RightPart;
